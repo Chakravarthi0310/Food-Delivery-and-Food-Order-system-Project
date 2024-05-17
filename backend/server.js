@@ -39,6 +39,73 @@ db.connect((err) => {
         return; // Stop further execution if there's an error
     }
     console.log("MySQL connected successfully.");
+    const createTables = `
+    CREATE TABLE IF NOT EXISTS users (
+        ID INT AUTO_INCREMENT PRIMARY KEY,
+        NAME VARCHAR(100) NOT NULL,
+        EMAIL VARCHAR(100) NOT NULL UNIQUE,
+        PASSWORD VARCHAR(255) NOT NULL,
+        PHONENUMBER VARCHAR(15) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS admins (
+        ID INT AUTO_INCREMENT PRIMARY KEY,
+        NAME VARCHAR(100) NOT NULL,
+        EMAIL VARCHAR(100) NOT NULL UNIQUE,
+        PASSWORD VARCHAR(255) NOT NULL,
+        PHONENUMBER VARCHAR(15) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS items (
+        ITEM_ID INT AUTO_INCREMENT PRIMARY KEY,
+        ITEM_NAME VARCHAR(100) NOT NULL,
+        DESCRIPTION TEXT NOT NULL,
+        PRICE DECIMAL(10, 2) NOT NULL,
+        IMAGE VARCHAR(255) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS cart (
+        CART_ID INT AUTO_INCREMENT PRIMARY KEY,
+        USER_ID INT NOT NULL,
+        ITEM_ID INT NOT NULL,
+        NO_OF_ITEMS INT NOT NULL,
+        PRICE DECIMAL(10, 2) NOT NULL,
+        FOREIGN KEY (USER_ID) REFERENCES users(ID),
+        FOREIGN KEY (ITEM_ID) REFERENCES items(ITEM_ID)
+    );
+
+    CREATE TABLE IF NOT EXISTS orders (
+        ORDER_ID INT AUTO_INCREMENT PRIMARY KEY,
+        CUSTOMER_ID INT NOT NULL,
+        ITEM_ID INT NOT NULL,
+        ADDRESS VARCHAR(255) NOT NULL,
+        NO_OF_ITEMS INT NOT NULL,
+        PRICE DECIMAL(10, 2) NOT NULL,
+        FOREIGN KEY (CUSTOMER_ID) REFERENCES users(ID),
+        FOREIGN KEY (ITEM_ID) REFERENCES items(ITEM_ID)
+    );
+
+    CREATE TABLE IF NOT EXISTS sales (
+        SALE_ID INT AUTO_INCREMENT PRIMARY KEY,
+        ITEM_ID INT NOT NULL,
+        NO_OF_ITEMS INT NOT NULL,
+        PRICE DECIMAL(10, 2) NOT NULL,
+        FOREIGN KEY (ITEM_ID) REFERENCES items(ITEM_ID)
+    );
+`;
+
+    // Split the createTables string into separate SQL statements
+    const sqlStatements = createTables.split(';').filter(statement => statement.trim() !== '');
+
+    // Execute each SQL statement individually
+    sqlStatements.forEach(sql => {
+        db.query(sql, (err, result) => {
+            if (err) throw err;
+            console.log("Table created or already exists.");
+        });
+    });
+
+
 });
 
 app.post('/fooddelivery/add-user', (req, res) => {
