@@ -13,12 +13,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors({}));
 app.use(express.json());
 
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "fooddelivery",
-    port: 3306
+const db = mysql.createConnection({  
+    host: "sql12.freesqldatabase.com",
+      user: "sql12736310",
+      password: "xAAFv786f8",
+      database: "sql12736310",
+      port: 3306
 });
 
 const storage = multer.diskStorage({
